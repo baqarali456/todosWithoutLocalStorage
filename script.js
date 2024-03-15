@@ -4,52 +4,62 @@ const todobox = document.querySelector('.todobox');
 
 
 let todos = [];
-let str = "";
+
+let findText;
+let findTodoIndex;
+
 
 btn.addEventListener('click',(e)=>{
     if(btn.innerHTML === "Add"){
         todos.push(input.value);
-        addTodo();
-        input.value = "";
+        
     }
-})
+    else{
+       todos[findTodoIndex] = input.value;
+       todos.splice(findTodoIndex,1,todos[findTodoIndex]);
+       btn.innerHTML === "Add"
+    }
+    addTodo();
+    input.value = "";
+});
+
 
 function addTodo(){
-    str = "";
- todos.forEach(todo=>{
-   str += `<span class="todo">${todo}<span onclick="ondelete('${todo}')" class="delete"><i class="fa-solid fa-delete-left"></i></span><span onclick="onEdit('${todo}')" class="edit"><i class="fa-solid fa-pen"></i></span></span>`;
-    
-})
-todobox.innerHTML = str
+  removeChilds()
+  todos.forEach(todo=>{
+    let span = document.createElement('span');
+    span.className = "Todoselement"
+    span.innerHTML = `${todo}<i class="fa-solid fa-delete-left"></i>
+    <i class="fa-solid fa-pen"></i> 
+   `
+    todobox.appendChild(span);
+  });
 }
 
-function ondelete(value){
-  todos = todos.filter(todo=>todo !== value);
-  addTodo()
+function removeChilds(){
+  Array.from(todobox.children).forEach(ele=>{
+    ele.remove()
+  })
 }
 
-function onEdit(value){
-  let findDataIndex = todos.findIndex(todo=>todo === value);
-//   console.log(findDataIndex);
-  input.value = todos[findDataIndex];
-  btn.innerHTML = "Edit";
 
-  let datafind = todos.find(todo=>todo === input.value);
-   console.log(datafind);
-   
-  
-  
- 
-    btn.addEventListener('click',(e)=>{
-       if(e.target.innerHTML === "Edit"){
-          datafind = input.value;
-          todos.splice(findDataIndex,1,datafind);
-          addTodo();
-          input.value = "";
-          btn.innerHTML = "Add"
-       }
-        
-    })
-  
-  
-}
+
+todobox.addEventListener('click',(e)=>{  
+ if(e.target.classList.contains('fa-delete-left')){
+   findText = e.target.parentNode.innerText.trim()
+   findTodoIndex = todos.findIndex(ele=>ele == findText);
+   todos.splice(findTodoIndex,1);
+   addTodo();
+ }
+ else if(e.target.classList.contains('fa-pen')){
+  findText = e.target.parentNode.innerText.trim();
+  input.value = findText;
+   findTodoIndex = todos.findIndex(ele=>ele == findText);
+   console.log(findTodoIndex);
+   btn.innerHTML = "Edit"
+ }
+});
+
+
+
+
