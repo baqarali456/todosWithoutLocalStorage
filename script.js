@@ -2,8 +2,11 @@ const input = document.getElementById('input');
 const btn = document.getElementById('btn');
 const todobox = document.querySelector('.todobox');
 
+let todos = JSON.parse(localStorage.getItem("todos")) || [];
+if(todos){
+  addTodo();
+}
 
-let todos = [];
 
 let findText;
 let findTodoIndex;
@@ -11,14 +14,14 @@ let findTodoIndex;
 
 btn.addEventListener('click',(e)=>{
     if(btn.innerHTML === "Add"){
-        todos.push(input.value);
-        
+      todos.push(input.value); 
     }
     else{
-       todos[findTodoIndex] = input.value;
-       todos.splice(findTodoIndex,1,todos[findTodoIndex]);
-       btn.innerHTML === "Add"
+      todos[findTodoIndex] = input.value;
+      todos.splice(findTodoIndex,1,todos[findTodoIndex]);
+      btn.innerHTML === "Add"
     }
+    localStorage.setItem("todos",JSON.stringify(todos))
     addTodo();
     input.value = "";
 });
@@ -42,13 +45,12 @@ function removeChilds(){
   })
 }
 
-
-
 todobox.addEventListener('click',(e)=>{  
  if(e.target.classList.contains('fa-delete-left')){
    findText = e.target.parentNode.innerText.trim()
    findTodoIndex = todos.findIndex(ele=>ele == findText);
    todos.splice(findTodoIndex,1);
+   localStorage.setItem("todos",JSON.stringify(todos))
    addTodo();
  }
  else if(e.target.classList.contains('fa-pen')){
