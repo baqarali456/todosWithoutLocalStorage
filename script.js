@@ -2,65 +2,76 @@ const input = document.getElementById('input');
 const btn = document.getElementById('btn');
 const todobox = document.querySelector('.todobox');
 
-let todos = JSON.parse(localStorage.getItem("todos")) || [];
-if(todos){
-  addTodo();
+let todos = JSON.parse(localStorage.getItem('todos')) || [];
+let index = 0;
+let findIndex;
+
+
+if(todos.length > 0){
+  setTodos();
+}
+else{
+  todobox.innerHTML += `<p>No Todos in List</p>`;
 }
 
+function AddTodos(){
+  index++;
+  todos.push({id:index,text:input.value});
+  localStorage.setItem("todos",JSON.stringify(todos))
+}
 
-let findText;
-let findTodoIndex;
-
-
-btn.addEventListener('click',(e)=>{
-    if(btn.innerHTML === "Add"){
-      todos.push(input.value); 
-    }
-    else{
-      todos[findTodoIndex] = input.value;
-      todos.splice(findTodoIndex,1,todos[findTodoIndex]);
-      btn.innerHTML === "Add"
-    }
-    localStorage.setItem("todos",JSON.stringify(todos))
-    addTodo();
-    input.value = "";
+btn.addEventListener('click',()=>{
+  if(btn.innerHTML == "Add"){
+    AddTodos();
+  }
+  else{
+    btn.innerHTML = "Add"
+    todos.splice(findIndex,1,{...todos[findIndex],text:input.value});
+        localStorage.setItem('todos',JSON.stringify(todos))
+  }
+  setTodos();
 });
 
-
-function addTodo(){
-  removeChilds()
+function setTodos(){
+  allChildrenRemove()
   todos.forEach(todo=>{
-    let span = document.createElement('span');
-    span.className = "Todoselement"
-    span.innerHTML = `${todo}<i class="fa-solid fa-delete-left"></i>
+    let span = document.createElement("span");
+    span.innerHTML = `${todo.text}<i class="fa-solid fa-delete-left"></i>
     <i class="fa-solid fa-pen"></i> 
    `
-    todobox.appendChild(span);
+   todobox.appendChild(span);
   });
+  input.value = "";
+  
 }
 
-function removeChilds(){
+function allChildrenRemove(){
   Array.from(todobox.children).forEach(ele=>{
     ele.remove()
   })
 }
 
-todobox.addEventListener('click',(e)=>{  
- if(e.target.classList.contains('fa-delete-left')){
-   findText = e.target.parentNode.innerText.trim()
-   findTodoIndex = todos.findIndex(ele=>ele == findText);
-   todos.splice(findTodoIndex,1);
-   localStorage.setItem("todos",JSON.stringify(todos))
-   addTodo();
- }
- else if(e.target.classList.contains('fa-pen')){
-  findText = e.target.parentNode.innerText.trim();
-  input.value = findText;
-   findTodoIndex = todos.findIndex(ele=>ele == findText);
-   console.log(findTodoIndex);
-   btn.innerHTML = "Edit"
- }
-});
+
+
+todobox.addEventListener('click',(e)=>{
+  if(e.target.classList.contains('fa-delete-left')){
+    let targetText = e.target.parentElement.innerText.trim()
+      
+       findIndex = todos.findIndex(todo=>todo.text == targetText);
+        todos.splice(findIndex,1);
+        localStorage.setItem('todos',JSON.stringify(todos))
+        setTodos();
+  }
+  else if(e.target.classList.contains('fa-pen')){
+    btn.innerHTML = "Edit";
+    let targetText = e.target.parentElement.innerText.trim();
+    input.value = targetText;
+      
+       findIndex = todos.findIndex(todo=>todo.text == targetText); 
+  }
+})
+
+
 
 
 
